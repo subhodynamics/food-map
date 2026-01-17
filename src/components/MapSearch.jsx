@@ -1,9 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 
 export default function MapSearch() {
-  const [searchText, setSearchText] = useState("");
   const map = useMap();
+  const inputRef = useRef(null);
+
+  const [searchText, setSearchText] = useState("");
+  const [isFirstSearch, setIsFirstSearch] = useState(true);
+
+  useEffect(() => {
+    if (isFirstSearch && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isFirstSearch]);
 
   async function searchPlace() {
     if (!searchText) return;
@@ -22,21 +31,26 @@ export default function MapSearch() {
         animate: true,
         duration: 1.5
       });
-    } else {
-      alert("Place not found");
+
+      setIsFirstSearch(false);
     }
   }
 
   return (
-    <div className="search-box">
-            <input
-            type="text"
-            placeholder="Where do you wanna eat?"
-            value={searchText}
-            onChange={e => setSearchText(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && searchPlace()}
-            />
-            <button onClick={searchPlace}>⌕</button>
-            </div>
-    );
+    <>
+      {isFirstSearch && <div className="map-dim-overlay" />}
+
+      <div className={`search-box ${isFirstSearch ? "centered" : ""}`}>
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Where do you wanna eat?"
+          value={searchText}
+          onChange={e => setSearchText(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && searchPlace()}
+        />
+        <button onClick={searchPlace}>⌕</button>
+      </div>
+    </>
+  );
 }
