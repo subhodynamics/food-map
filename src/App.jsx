@@ -32,7 +32,7 @@ export default function App() {
 
   return (
     <MapContainer center={[22.5726, 88.3639]} zoom={12}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png" />
 
       {user && (
         <Marker position={[user.lat, user.lng]} icon={blueIcon}>
