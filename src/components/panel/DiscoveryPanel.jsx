@@ -1,4 +1,4 @@
-import { CATEGORY_ALL_LABEL, GEOLOCATION_STATUS } from "../../constants/explorer";
+import { GEOLOCATION_STATUS } from "../../constants/explorer";
 import PlaceCard from "./PlaceCard";
 
 function EmptyState({ eyebrow, title, description }) {
@@ -17,8 +17,11 @@ export default function DiscoveryPanel({
   activeCityData,
   activeCategory,
   categories,
+  activeTag,
+  quickFilters,
   searchedArea,
   visibleOutlets,
+  featuredOutlet,
   activeOutlet,
   referencePoint,
   locationState,
@@ -27,6 +30,7 @@ export default function DiscoveryPanel({
   onExploreCity,
   onReset,
   onSelectCategory,
+  onSelectTag,
   onFocusOutlet
 }) {
   const isCitySelected = Boolean(activeCityData);
@@ -62,17 +66,23 @@ export default function DiscoveryPanel({
         <span className="status-pill">{locationLabel}</span>
       </div>
 
-      <div className="city-list">
-        {cityCatalog.map(city => (
-          <button
-            key={city.id}
-            type="button"
-            className={`city-chip ${activeCity === city.id ? "city-chip--active" : ""}`}
-            onClick={() => onExploreCity(city)}
-          >
-            {city.name}
-          </button>
-        ))}
+      <div className="panel-subsection">
+        <div className="panel-subsection__head">
+          <p className="section-label">Cities</p>
+          <p className="section-meta">{cityCatalog.length} available</p>
+        </div>
+        <div className="city-list">
+          {cityCatalog.map(city => (
+            <button
+              key={city.id}
+              type="button"
+              className={`city-chip ${activeCity === city.id ? "city-chip--active" : ""}`}
+              onClick={() => onExploreCity(city)}
+            >
+              {city.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="panel-tools">
@@ -96,8 +106,57 @@ export default function DiscoveryPanel({
         </div>
       )}
 
+      {isCitySelected && quickFilters.length > 0 && (
+        <div className="panel-subsection">
+          <div className="panel-subsection__head">
+            <p className="section-label">Quick filters</p>
+            {activeTag && <p className="section-meta">Tag: {activeTag}</p>}
+          </div>
+          <div className="panel-actions">
+            {quickFilters.map(tag => (
+              <button
+                key={tag}
+                type="button"
+                className={`chip ${activeTag === tag ? "chip--active" : ""}`}
+                onClick={() => onSelectTag(tag)}
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {isCitySelected ? (
         <>
+          {featuredOutlet && (
+            <div className="featured-place">
+              <div className="featured-place__copy">
+                <p className="section-label">Start here</p>
+                <h2>{featuredOutlet.name}</h2>
+                <p className="featured-place__story">{featuredOutlet.whyUnderrated}</p>
+              </div>
+              <div className="featured-place__meta">
+                <span>{featuredOutlet.neighborhood}</span>
+                <span>{featuredOutlet.bestItem}</span>
+                <span>Verified {featuredOutlet.lastVerified}</span>
+              </div>
+              <div className="tag-row">
+                {featuredOutlet.tags.map(tag => (
+                  <span key={tag} className="tag">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <div className="featured-place__footer">
+                <span>Curated by {featuredOutlet.curatedBy}</span>
+                <button type="button" className="primary-button" onClick={() => onFocusOutlet(featuredOutlet)}>
+                  Open featured pick
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="panel-section-head">
             <div>
               <p className="section-label">Closest to {referencePoint.label}</p>

@@ -46,6 +46,7 @@ export function useExplorerData({ outlets, activeCity, activeCategory, searchedA
   return {
     cityCatalog,
     activeCityData,
+    cityOutlets,
     categories,
     visibleOutlets,
     referencePoint,

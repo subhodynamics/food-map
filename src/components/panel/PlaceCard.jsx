@@ -16,9 +16,20 @@ export default function PlaceCard({ outlet, index, isActive, onFocus }) {
 
       <p className="place-card__story">{outlet.whyUnderrated}</p>
 
+      <div className="place-card__insights">
+        <p>
+          <span className="place-card__label">Best order</span>
+          <strong>{outlet.bestItem}</strong>
+        </p>
+        <p>
+          <span className="place-card__label">Known for</span>
+          <strong>{outlet.knownFor}</strong>
+        </p>
+      </div>
+
       <div className="place-card__meta">
-        <span>{outlet.bestItem}</span>
         <span>{outlet.priceRange}</span>
+        <span>{outlet.vibe}</span>
         <span>{formatDistance(outlet.distanceKm)}</span>
       </div>
 
@@ -28,6 +39,11 @@ export default function PlaceCard({ outlet, index, isActive, onFocus }) {
             {tag}
           </span>
         ))}
+      </div>
+
+      <div className="place-card__trust">
+        <span>Curated by {outlet.curatedBy}</span>
+        <span>Verified {outlet.lastVerified}</span>
       </div>
 
       <div className="place-card__actions">

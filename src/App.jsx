@@ -21,12 +21,14 @@ export default function App() {
   const [activeOutletId, setActiveOutletId] = useState(null);
   const [activeCity, setActiveCity] = useState(null);
   const [activeCategory, setActiveCategory] = useState(CATEGORY_ALL_LABEL);
+  const [activeTag, setActiveTag] = useState(null);
   const [searchedArea, setSearchedArea] = useState(null);
   const [viewport, setViewport] = useState(DEFAULT_VIEWPORT);
 
   const {
     cityCatalog,
     activeCityData,
+    cityOutlets,
     categories,
     visibleOutlets,
     referencePoint,
@@ -43,6 +45,28 @@ export default function App() {
     outlets.find(outlet => outlet.id === activeOutletId) ||
     null;
 
+  const quickFilters = [];
+  const quickFilterCounts = {};
+
+  for (const outlet of cityOutlets) {
+    for (const tag of outlet.tags) {
+      quickFilterCounts[tag] = (quickFilterCounts[tag] || 0) + 1;
+    }
+  }
+
+  Object.entries(quickFilterCounts)
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+    .slice(0, 6)
+    .forEach(([tag]) => {
+      quickFilters.push(tag);
+    });
+
+  const filteredOutlets = activeTag
+    ? visibleOutlets.filter(outlet => outlet.tags.includes(activeTag))
+    : visibleOutlets;
+
+  const featuredOutlet = filteredOutlets[0] || null;
+
   function focusOutlet(outlet) {
     setActiveOutletId(outlet.id);
     setViewport({
@@ -56,6 +80,7 @@ export default function App() {
 
     setActiveCity(normalizedCity);
     setActiveCategory(CATEGORY_ALL_LABEL);
+    setActiveTag(null);
     setActiveOutletId(null);
     setSearchedArea(area);
     setViewport({
@@ -67,6 +92,7 @@ export default function App() {
   function resetArea() {
     setActiveCity(null);
     setActiveCategory(CATEGORY_ALL_LABEL);
+    setActiveTag(null);
     setActiveOutletId(null);
     setSearchedArea(null);
     setViewport(DEFAULT_VIEWPORT);
@@ -75,6 +101,7 @@ export default function App() {
   function exploreCity(city) {
     setActiveCity(city.id);
     setActiveCategory(CATEGORY_ALL_LABEL);
+    setActiveTag(null);
     setActiveOutletId(null);
     setSearchedArea({
       lat: city.center[0],
@@ -96,8 +123,11 @@ export default function App() {
         activeCityData={activeCityData}
         activeCategory={activeCategory}
         categories={categories}
+        activeTag={activeTag}
+        quickFilters={quickFilters}
         searchedArea={searchedArea}
-        visibleOutlets={visibleOutlets}
+        visibleOutlets={filteredOutlets}
+        featuredOutlet={featuredOutlet}
         activeOutlet={activeOutlet}
         referencePoint={referencePoint}
         locationState={locationState}
@@ -107,6 +137,11 @@ export default function App() {
         onReset={resetArea}
         onSelectCategory={category => {
           setActiveCategory(category);
+          setActiveTag(null);
+          setActiveOutletId(null);
+        }}
+        onSelectTag={tag => {
+          setActiveTag(currentTag => currentTag === tag ? null : tag);
           setActiveOutletId(null);
         }}
         onFocusOutlet={focusOutlet}
@@ -123,7 +158,7 @@ export default function App() {
           <MapSearch cityOptions={cityCatalog} onPlaceSelect={handleAreaSearch} />
           <OutletMarkers
             user={user}
-            outlets={visibleOutlets}
+            outlets={filteredOutlets}
             activeOutletId={activeOutletId}
             onSelectOutlet={setActiveOutletId}
             onClearSelection={() => setActiveOutletId(null)}

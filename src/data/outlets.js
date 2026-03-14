@@ -12,6 +12,8 @@ export const outlets = [
     bestItem: "House pour-over",
     vibe: "Quiet and work-friendly",
     whyUnderrated: "It feels like a serious coffee lab without the intimidating energy.",
+    curatedBy: "Subho",
+    lastVerified: "Feb 2026",
     tags: ["Specialty beans", "Slow mornings", "Work-friendly"]
   },
   {
@@ -27,6 +29,8 @@ export const outlets = [
     bestItem: "Flat white",
     vibe: "Minimal and calm",
     whyUnderrated: "Reliable specialty coffee that locals keep returning to without social media noise.",
+    curatedBy: "Subho",
+    lastVerified: "Jan 2026",
     tags: ["Espresso", "Minimal", "Meet-ups"]
   },
   {
@@ -42,6 +46,8 @@ export const outlets = [
     bestItem: "Mushroom toast",
     vibe: "Airy and tucked away",
     whyUnderrated: "A polished brunch spot that still feels local instead of overexposed.",
+    curatedBy: "Subho",
+    lastVerified: "Feb 2026",
     tags: ["Brunch", "Date spot", "Comfort food"]
   },
   {
@@ -57,6 +63,8 @@ export const outlets = [
     bestItem: "Almond croissant",
     vibe: "Warm and European",
     whyUnderrated: "It has a neighborhood-bakery feel that makes it more memorable than louder cafe chains.",
+    curatedBy: "Subho",
+    lastVerified: "Jan 2026",
     tags: ["Pastries", "Dessert", "Slow afternoons"]
   },
   {
@@ -72,6 +80,8 @@ export const outlets = [
     bestItem: "Pain au chocolat",
     vibe: "Soft and elegant",
     whyUnderrated: "People talk about bigger bakery names first, but the pastry quality here is strong.",
+    curatedBy: "Subho",
+    lastVerified: "Feb 2026",
     tags: ["French pastries", "Bakery", "Coffee pairing"]
   },
   {
@@ -87,6 +97,8 @@ export const outlets = [
     bestItem: "Loaded fries",
     vibe: "Casual and chatty",
     whyUnderrated: "Good when you want something affordable and low-key instead of another polished cafe.",
+    curatedBy: "Subho",
+    lastVerified: "Dec 2025",
     tags: ["Budget", "Casual", "Late snack"]
   },
   {
@@ -102,6 +114,8 @@ export const outlets = [
     bestItem: "Breakfast platter",
     vibe: "Sunny and easygoing",
     whyUnderrated: "Solid all-rounder for morning meals without the weekend rush of trendier breakfast spots.",
+    curatedBy: "Subho",
+    lastVerified: "Feb 2026",
     tags: ["Breakfast", "All-day dining", "Groups"]
   },
   {
@@ -117,6 +131,8 @@ export const outlets = [
     bestItem: "Burnt basque cheesecake",
     vibe: "Small and memorable",
     whyUnderrated: "It has a distinct point of view instead of another generic dessert menu.",
+    curatedBy: "Subho",
+    lastVerified: "Jan 2026",
     tags: ["Cheesecake", "Dessert", "Takeaway"]
   },
   {
@@ -132,6 +148,8 @@ export const outlets = [
     bestItem: "Spinach ricotta ravioli",
     vibe: "Quiet date-night energy",
     whyUnderrated: "It is a more intimate Italian option than the usual city favourites.",
+    curatedBy: "Subho",
+    lastVerified: "Dec 2025",
     tags: ["Italian", "Date spot", "Comfort food"]
   },
   {
@@ -147,6 +165,8 @@ export const outlets = [
     bestItem: "Thukpa",
     vibe: "Cozy and unfussy",
     whyUnderrated: "You go for the comfort and keep coming back for how honest the food feels.",
+    curatedBy: "Subho",
+    lastVerified: "Feb 2026",
     tags: ["Tibetan", "Soul food", "Budget-friendly"]
   },
   {
@@ -162,6 +182,8 @@ export const outlets = [
     bestItem: "Iced americano",
     vibe: "Compact and focused",
     whyUnderrated: "A strong option for coffee people in Whitefield where many places feel more generic.",
+    curatedBy: "Subho",
+    lastVerified: "Jan 2026",
     tags: ["Coffee", "Quick stop", "Whitefield"]
   },
   {
@@ -177,6 +199,8 @@ export const outlets = [
     bestItem: "Chicken momo",
     vibe: "Relaxed and neighborhood-first",
     whyUnderrated: "It feels like a local recommendation, not a place everyone already knows.",
+    curatedBy: "Subho",
+    lastVerified: "Feb 2026",
     tags: ["Momos", "Casual dinner", "Neighborhood gem"]
   }
 ];

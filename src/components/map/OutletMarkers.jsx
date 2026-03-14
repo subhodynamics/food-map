@@ -30,6 +30,12 @@ function OutletPopup({ outlet }) {
         <span>{outlet.vibe}</span>
         <span>{formatDistance(outlet.distanceKm)}</span>
       </div>
+      <p className="popup-card__detail">
+        <strong>Curated by:</strong> {outlet.curatedBy}
+      </p>
+      <p className="popup-card__detail">
+        <strong>Verified:</strong> {outlet.lastVerified}
+      </p>
       <a href={getGoogleMapsSearchUrl(outlet.lat, outlet.lng)} target="_blank" rel="noreferrer">
         Open in Google Maps
       </a>
