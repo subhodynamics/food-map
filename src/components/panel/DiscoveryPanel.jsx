@@ -194,8 +194,8 @@ export default function DiscoveryPanel({
       ) : (
         <EmptyState
           eyebrow="Start with a city"
-          title="Search Bengaluru, Mumbai, Kolkata, or any other Indian city."
-          description="The app will center the map on that city and only show underrated places curated for it in your dataset."
+          title="Pick a city and we will help you find the spots locals quietly love."
+          description="Search for Bengaluru, Mumbai, Kolkata, or any Indian city to start exploring underrated cafes and restos."
         />
       )}
     </aside>
