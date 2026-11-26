@@ -1,4 +1,5 @@
 import { GEOLOCATION_STATUS } from "../../constants/explorer";
+import OnSpotLogo, { OnSpotMark } from "../OnSpotLogo";
 import PlaceCard from "./PlaceCard";
 
 function EmptyState({ eyebrow, title, description }) {
@@ -73,8 +74,11 @@ export default function DiscoveryPanel({
             className="sheet-summary-title"
             onClick={cycleSheetState}
           >
-            <span className="sheet-summary-eyebrow">India Hidden Bites</span>
-            <strong>{sheetSummary}</strong>
+            <OnSpotMark size={28} />
+            <span className="sheet-summary-copy">
+              <span className="sheet-summary-eyebrow">OnSpot · India</span>
+              <strong>{sheetSummary}</strong>
+            </span>
           </button>
           <div className="sheet-summary-actions">
             {sheetState !== "collapsed" && (
@@ -100,8 +104,8 @@ export default function DiscoveryPanel({
       </div>
 
       <div className="panel-hero">
-        <p className="panel-kicker">Underrated restos and cafes</p>
-        <h1>India hidden bites map</h1>
+        <OnSpotLogo />
+        <h1>Discover the spots locals quietly love.</h1>
         <p className="panel-copy">
           Search a city, then explore the low-key cafes, bakeries, and comfort-food
           spots curated there.
