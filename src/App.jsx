@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { MapContainer, TileLayer } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
 
 import DiscoveryPanel from "./components/panel/DiscoveryPanel";
 import MapSearch from "./components/MapSearch";
-import MapViewport from "./components/map/MapViewport";
-import OutletMarkers from "./components/map/OutletMarkers";
+import FoodMap from "./components/map/FoodMap";
 import {
   CATEGORY_ALL_LABEL,
   DEFAULT_VIEWPORT
@@ -24,6 +21,7 @@ export default function App() {
   const [activeTag, setActiveTag] = useState(null);
   const [searchedArea, setSearchedArea] = useState(null);
   const [viewport, setViewport] = useState(DEFAULT_VIEWPORT);
+  const [sheetState, setSheetState] = useState("half");
 
   const {
     cityCatalog,
@@ -73,6 +71,7 @@ export default function App() {
       center: [outlet.lat, outlet.lng],
       zoom: 15
     });
+    setSheetState("collapsed");
   }
 
   function handleAreaSearch(area) {
@@ -87,6 +86,7 @@ export default function App() {
       center: [area.lat, area.lng],
       zoom: 14
     });
+    setSheetState("half");
   }
 
   function resetArea() {
@@ -96,6 +96,7 @@ export default function App() {
     setActiveOutletId(null);
     setSearchedArea(null);
     setViewport(DEFAULT_VIEWPORT);
+    setSheetState("half");
   }
 
   function exploreCity(city) {
@@ -113,6 +114,7 @@ export default function App() {
       center: city.center,
       zoom: 13
     });
+    setSheetState("half");
   }
 
   return (
@@ -133,6 +135,8 @@ export default function App() {
         locationState={locationState}
         totalOutlets={outlets.length}
         hasSearchWithoutData={hasSearchWithoutData}
+        sheetState={sheetState}
+        onChangeSheetState={setSheetState}
         onExploreCity={exploreCity}
         onReset={resetArea}
         onSelectCategory={category => {
@@ -148,22 +152,19 @@ export default function App() {
       />
 
       <section className="map-stage">
-        <MapContainer center={DEFAULT_VIEWPORT.center} zoom={DEFAULT_VIEWPORT.zoom} zoomControl={false}>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          />
-
-          <MapViewport viewport={viewport} />
-          <MapSearch cityOptions={cityCatalog} onPlaceSelect={handleAreaSearch} />
-          <OutletMarkers
-            user={user}
-            outlets={filteredOutlets}
-            activeOutletId={activeOutletId}
-            onSelectOutlet={setActiveOutletId}
-            onClearSelection={() => setActiveOutletId(null)}
-          />
-        </MapContainer>
+        <FoodMap
+          viewport={viewport}
+          user={user}
+          outlets={filteredOutlets}
+          activeOutletId={activeOutletId}
+          onSelectOutlet={setActiveOutletId}
+          onClearSelection={() => setActiveOutletId(null)}
+        />
+        <MapSearch
+          cityOptions={cityCatalog}
+          hasActiveArea={Boolean(activeCity || searchedArea)}
+          onPlaceSelect={handleAreaSearch}
+        />
       </section>
     </div>
   );

@@ -1,9 +1,12 @@
 import { formatDistance } from "../../utils/distance";
-import { getGoogleMapsSearchUrl } from "../../utils/maps";
+import { getGoogleMapsDirectionsUrl } from "../../utils/maps";
 
 export default function PlaceCard({ outlet, index, isActive, onFocus }) {
   return (
-    <article className={`place-card ${isActive ? "place-card--active" : ""}`}>
+    <article
+      className={`place-card ${isActive ? "place-card--active" : ""}`}
+      style={{ "--card-index": index }}
+    >
       <div className="place-card__top">
         <span className="place-rank">{String(index + 1).padStart(2, "0")}</span>
         <div>
@@ -47,10 +50,19 @@ export default function PlaceCard({ outlet, index, isActive, onFocus }) {
       </div>
 
       <div className="place-card__actions">
-        <button type="button" className="primary-button" onClick={() => onFocus(outlet)}>
+        <button
+          type="button"
+          className="primary-button"
+          aria-pressed={isActive}
+          onClick={() => onFocus(outlet)}
+        >
           View on map
         </button>
-        <a href={getGoogleMapsSearchUrl(outlet.lat, outlet.lng)} target="_blank" rel="noreferrer">
+        <a
+          href={getGoogleMapsDirectionsUrl(outlet.lat, outlet.lng)}
+          target="_blank"
+          rel="noreferrer"
+        >
           Open route
         </a>
       </div>
