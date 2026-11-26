@@ -27,6 +27,8 @@ export default function DiscoveryPanel({
   locationState,
   totalOutlets,
   hasSearchWithoutData,
+  sheetState,
+  onChangeSheetState,
   onExploreCity,
   onReset,
   onSelectCategory,
@@ -40,8 +42,63 @@ export default function DiscoveryPanel({
       ? "Your location is visible on the map"
       : "Location optional";
 
+  const sheetSummary = activeLabel
+    ? `${activeLabel} · ${visibleOutlets.length} ${visibleOutlets.length === 1 ? "spot" : "spots"}`
+    : `${cityCatalog.length} cities · ${totalOutlets} hidden bites`;
+
+  function cycleSheetState() {
+    if (sheetState === "collapsed") {
+      onChangeSheetState("half");
+    } else if (sheetState === "half") {
+      onChangeSheetState("expanded");
+    } else {
+      onChangeSheetState("collapsed");
+    }
+  }
+
   return (
-    <aside className="discovery-panel">
+    <aside className={`discovery-panel discovery-panel--${sheetState}`}>
+      <div className="sheet-controls">
+        <button
+          type="button"
+          className="sheet-handle-btn"
+          onClick={cycleSheetState}
+          aria-label="Toggle discovery sheet size"
+        >
+          <span className="sheet-handle" />
+        </button>
+        <div className="sheet-summary-row">
+          <button
+            type="button"
+            className="sheet-summary-title"
+            onClick={cycleSheetState}
+          >
+            <span className="sheet-summary-eyebrow">India Hidden Bites</span>
+            <strong>{sheetSummary}</strong>
+          </button>
+          <div className="sheet-summary-actions">
+            {sheetState !== "collapsed" && (
+              <button
+                type="button"
+                className="sheet-toggle-btn"
+                onClick={() => onChangeSheetState("collapsed")}
+              >
+                Map
+              </button>
+            )}
+            <button
+              type="button"
+              className="sheet-toggle-btn sheet-toggle-btn--accent"
+              onClick={() =>
+                onChangeSheetState(sheetState === "expanded" ? "half" : "expanded")
+              }
+            >
+              {sheetState === "expanded" ? "Split" : "List"}
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="panel-hero">
         <p className="panel-kicker">Underrated restos and cafes</p>
         <h1>India hidden bites map</h1>
@@ -56,20 +113,19 @@ export default function DiscoveryPanel({
           <strong>{cityCatalog.length}</strong> curated cities
         </span>
         <span className="status-pill">
-          {activeLabel ? `Exploring: ${activeLabel}` : "Search a city to begin"}
-        </span>
-        <span className="status-pill">
-          {isCitySelected || hasSearchWithoutData
-            ? `${visibleOutlets.length} spots in view`
-            : `${totalOutlets} places in the dataset`}
+          {activeLabel ? `Exploring: ${activeLabel}` : `${totalOutlets} curated spots`}
         </span>
         <span className="status-pill">{locationLabel}</span>
       </div>
 
       <div className="panel-subsection">
         <div className="panel-subsection__head">
-          <p className="section-label">Cities</p>
-          <p className="section-meta">{cityCatalog.length} available</p>
+          <p className="section-label">Cities ({cityCatalog.length})</p>
+          {(isCitySelected || hasSearchWithoutData) && (
+            <button type="button" className="subtle-button subtle-button--compact" onClick={onReset}>
+              Reset to India
+            </button>
+          )}
         </div>
         <div className="city-list">
           {cityCatalog.map(city => (
@@ -83,12 +139,6 @@ export default function DiscoveryPanel({
             </button>
           ))}
         </div>
-      </div>
-
-      <div className="panel-tools">
-        <button type="button" className="subtle-button" onClick={onReset}>
-          Reset to India
-        </button>
       </div>
 
       {isCitySelected && (
