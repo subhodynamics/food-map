@@ -295,7 +295,7 @@ export default function FoodMap({
     }
 
     const popup = new Popup({
-      offset: [0, -44],
+      offset: [0, -52],
       closeOnClick: false,
       maxWidth: "min(300px, calc(100vw - 2.5rem))"
     })

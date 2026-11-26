@@ -6,7 +6,8 @@ const PIN_SVG = `
       stroke="#ffffff"
       stroke-width="2.4"
     />
-    <circle cx="17" cy="15.5" r="5" fill="#ffffff" />
+    <circle cx="17" cy="15.5" r="6" fill="#111318" />
+    <circle cx="17" cy="15.5" r="2.6" fill="#ffffff" />
   </svg>
 `;
 
