@@ -28,8 +28,11 @@ export default function DiscoveryPanel({
   locationState,
   totalOutlets,
   hasSearchWithoutData,
+  isLoadingCity,
+  dataError,
   sheetState,
   onChangeSheetState,
+  onOpenAddSpot,
   onExploreCity,
   onReset,
   onSelectCategory,
@@ -81,6 +84,14 @@ export default function DiscoveryPanel({
             </span>
           </button>
           <div className="sheet-summary-actions">
+            <button
+              type="button"
+              className="sheet-toggle-btn"
+              onClick={onOpenAddSpot}
+              aria-label="Add a spot"
+            >
+              + Spot
+            </button>
             {sheetState !== "collapsed" && (
               <button
                 type="button"
@@ -104,12 +115,18 @@ export default function DiscoveryPanel({
       </div>
 
       <div className="panel-hero">
-        <OnSpotLogo />
+        <div className="panel-brand-row">
+          <OnSpotLogo />
+          <button type="button" className="add-spot-btn" onClick={onOpenAddSpot}>
+            + Add a Spot
+          </button>
+        </div>
         <h1>Discover the spots locals quietly love.</h1>
         <p className="panel-copy">
           Search a city, then explore the low-key cafes, bakeries, and comfort-food
           spots curated there.
         </p>
+        {dataError && <p className="panel-warning">{dataError}</p>}
       </div>
 
       <div className="panel-status">
@@ -219,7 +236,12 @@ export default function DiscoveryPanel({
             {activeOutlet && <p className="section-meta">Picked: {activeOutlet.name}</p>}
           </div>
 
-          {visibleOutlets.length ? (
+          {isLoadingCity ? (
+            <div className="loading-state">
+              <p className="section-label">Loading spots</p>
+              <p className="section-meta">Fetching curated recommendations for {activeCityData.name}...</p>
+            </div>
+          ) : visibleOutlets.length ? (
             <div className="places-list">
               {visibleOutlets.map((outlet, index) => (
                 <PlaceCard
@@ -235,7 +257,7 @@ export default function DiscoveryPanel({
             <EmptyState
               eyebrow="No city data yet"
               title={`No curated spots in ${searchedArea?.city || activeCityData.name} yet.`}
-              description="The map found the city, but your local dataset does not have recommendations there yet. Add places for this city in the outlets file to make it explorable."
+              description="The map found the city, but there are no approved spots here yet. Know a local favourite? Add it to OnSpot!"
             />
           )}
         </>
@@ -243,7 +265,7 @@ export default function DiscoveryPanel({
         <EmptyState
           eyebrow="No city data yet"
           title={`No curated spots in ${searchedArea.city} yet.`}
-          description="The map found the city, but your local dataset does not have recommendations there yet. Add places for this city in the outlets file to make it explorable."
+          description="The map found the city, but there are no approved spots here yet. Click '+ Add a Spot' above to suggest a local favourite!"
         />
       ) : (
         <EmptyState
