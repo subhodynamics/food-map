@@ -11,10 +11,21 @@ export function getDistance(lat1, lon1, lat2, lon2) {
   return earthRadiusKm * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
-export function formatDistance(distanceKm) {
-  if (distanceKm < 1) {
-    return `${Math.round(distanceKm * 1000)} m away`;
+export function formatDistance(distanceKm, referenceLabel = "you") {
+  if (!Number.isFinite(distanceKm)) {
+    return "";
   }
 
-  return `${distanceKm.toFixed(1)} km away`;
+  let formatted;
+  if (distanceKm < 1) {
+    formatted = `${Math.round(distanceKm * 1000)} m`;
+  } else if (distanceKm >= 100) {
+    formatted = `${Math.round(distanceKm).toLocaleString("en-IN")} km`;
+  } else {
+    formatted = `${distanceKm.toFixed(1)} km`;
+  }
+
+  return referenceLabel === "you"
+    ? `${formatted} from you`
+    : `${formatted} from ${referenceLabel}`;
 }

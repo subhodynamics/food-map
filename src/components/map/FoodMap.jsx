@@ -82,7 +82,7 @@ function OutletPopup({ outlet }) {
       <div className="popup-card__footer">
         <span>{outlet.priceRange}</span>
         <span>{outlet.vibe}</span>
-        <span>{formatDistance(outlet.distanceKm)}</span>
+        <span>{formatDistance(outlet.distanceKm, outlet.distanceReferenceLabel)}</span>
       </div>
       <p className="popup-card__detail">
         <strong>Curated by:</strong> {outlet.curatedBy}

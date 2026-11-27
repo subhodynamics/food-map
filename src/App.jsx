@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import AddSpotModal from "./components/AddSpotModal";
 import DiscoveryPanel from "./components/panel/DiscoveryPanel";
 import MapSearch from "./components/MapSearch";
 import FoodMap from "./components/map/FoodMap";
@@ -7,9 +8,9 @@ import {
   CATEGORY_ALL_LABEL,
   DEFAULT_VIEWPORT
 } from "./constants/explorer";
-import { outlets } from "./data/outlets";
 import { useCurrentLocation } from "./hooks/useCurrentLocation";
 import { useExplorerData } from "./hooks/useExplorerData";
+import { useOutlets } from "./hooks/useOutlets";
 import "./styles/map.css";
 import { normalizeCityName } from "./utils/city";
 
@@ -22,25 +23,35 @@ export default function App() {
   const [searchedArea, setSearchedArea] = useState(null);
   const [viewport, setViewport] = useState(DEFAULT_VIEWPORT);
   const [sheetState, setSheetState] = useState("half");
+  const [isAddSpotOpen, setIsAddSpotOpen] = useState(false);
 
   const {
     cityCatalog,
-    activeCityData,
+    totalOutlets,
     cityOutlets,
+    isLoadingCity,
+    dataError,
+    isLiveBackend
+  } = useOutlets(activeCity);
+
+  const {
+    activeCityData,
     categories,
     visibleOutlets,
     referencePoint,
     hasSearchWithoutData
   } = useExplorerData({
-    outlets,
+    cityCatalog,
+    cityOutlets,
     activeCity,
     activeCategory,
-    searchedArea
+    searchedArea,
+    user
   });
 
   const activeOutlet =
     visibleOutlets.find(outlet => outlet.id === activeOutletId) ||
-    outlets.find(outlet => outlet.id === activeOutletId) ||
+    cityOutlets.find(outlet => outlet.id === activeOutletId) ||
     null;
 
   const quickFilters = [];
@@ -133,10 +144,13 @@ export default function App() {
         activeOutlet={activeOutlet}
         referencePoint={referencePoint}
         locationState={locationState}
-        totalOutlets={outlets.length}
+        totalOutlets={totalOutlets}
         hasSearchWithoutData={hasSearchWithoutData}
+        isLoadingCity={isLoadingCity}
+        dataError={dataError}
         sheetState={sheetState}
         onChangeSheetState={setSheetState}
+        onOpenAddSpot={() => setIsAddSpotOpen(true)}
         onExploreCity={exploreCity}
         onReset={resetArea}
         onSelectCategory={category => {
@@ -166,6 +180,13 @@ export default function App() {
           onPlaceSelect={handleAreaSearch}
         />
       </section>
+      <AddSpotModal
+        isOpen={isAddSpotOpen}
+        initialCity={activeCityData?.name || searchedArea?.city || "Bengaluru"}
+        initialCenter={activeCityData?.center || (searchedArea ? [searchedArea.lat, searchedArea.lng] : null)}
+        isLiveBackend={isLiveBackend}
+        onClose={() => setIsAddSpotOpen(false)}
+      />
     </div>
   );
 }
