@@ -33,7 +33,7 @@ export default function PlaceCard({ outlet, index, isActive, onFocus }) {
       <div className="place-card__meta">
         <span>{outlet.priceRange}</span>
         <span>{outlet.vibe}</span>
-        <span>{formatDistance(outlet.distanceKm)}</span>
+        <span>{formatDistance(outlet.distanceKm, outlet.distanceReferenceLabel)}</span>
       </div>
 
       <div className="tag-row">
