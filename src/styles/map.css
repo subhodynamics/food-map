@@ -1397,6 +1397,27 @@ input:focus-visible {
 }
 
 @media (max-width: 640px) {
+  .sheet-summary-row {
+    gap: 0.45rem;
+  }
+
+  .sheet-summary-actions {
+    gap: 0.35rem;
+  }
+
+  .sheet-toggle-btn {
+    padding: 0.42rem 0.68rem;
+    font-size: 0.78rem;
+  }
+
+  .search-box input,
+  .pin-picker-lookup input,
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    font-size: 1rem;
+  }
+
   .modal-backdrop {
     padding: 0;
     align-items: end;
@@ -1408,9 +1429,23 @@ input:focus-visible {
     max-height: 92dvh;
   }
 
+  .pin-picker-map {
+    height: 180px;
+  }
+
   .form-grid,
   .pin-picker-lookup {
     grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    min-height: 2.75rem;
   }
 }
 
