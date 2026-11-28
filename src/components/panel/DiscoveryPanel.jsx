@@ -123,6 +123,15 @@ export default function DiscoveryPanel({
             )}
             <button
               type="button"
+              className="sheet-toggle-btn sheet-toggle-btn--amber"
+              onClick={() =>
+                onChangeSheetState(sheetState === "expanded" ? "half" : "expanded")
+              }
+            >
+              {sheetState === "expanded" ? "Half" : "Full"}
+            </button>
+            <button
+              type="button"
               className="sheet-toggle-btn"
               onClick={() =>
                 onChangeSheetState(sheetState === "collapsed" ? "half" : "collapsed")
