@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import AddSpotModal from "./components/AddSpotModal";
+import LaunchSplash from "./components/LaunchSplash";
 import DiscoveryPanel from "./components/panel/DiscoveryPanel";
 import MapSearch from "./components/MapSearch";
 import OnSpotLogo from "./components/OnSpotLogo";
@@ -15,34 +16,24 @@ import { useExplorerData } from "./hooks/useExplorerData";
 import { useOutlets } from "./hooks/useOutlets";
 import { fetchOutletsByCity } from "./services/outletsService";
 import "./styles/map.css";
-import { buildCityCatalog, normalizeCityName } from "./utils/city";
-
-const INITIAL_LOCAL_CITY = (() => {
-  const { cityCatalog } = buildCityCatalog(localOutlets);
-  return (
-    cityCatalog.find(city => city.id === "bengaluru") ||
-    cityCatalog[0] ||
-    null
-  );
-})();
+import { normalizeCityName } from "./utils/city";
 
 export default function App() {
   const { user, locationState } = useCurrentLocation();
   const [activeOutletId, setActiveOutletId] = useState(null);
-  const [hasDismissedSpot, setHasDismissedSpot] = useState(false);
-  const [activeCity, setActiveCity] = useState(
-    () => INITIAL_LOCAL_CITY?.id || null
-  );
+  const [hasDismissedSpot, setHasDismissedSpot] = useState(true);
+  const [activeCity, setActiveCity] = useState(null);
   const [activeCategory, setActiveCategory] = useState(CATEGORY_ALL_LABEL);
   const [activeTag, setActiveTag] = useState(null);
   const [searchedArea, setSearchedArea] = useState(null);
-  const [customViewport, setCustomViewport] = useState(() =>
-    INITIAL_LOCAL_CITY
-      ? { center: INITIAL_LOCAL_CITY.center, zoom: 12.6 }
-      : DEFAULT_VIEWPORT
-  );
+  const [customViewport, setCustomViewport] = useState(null);
   const [sheetState, setSheetState] = useState("half");
   const [isAddSpotOpen, setIsAddSpotOpen] = useState(false);
+  const [hasLaunched, setHasLaunched] = useState(false);
+
+  const handleSplashComplete = useCallback(() => {
+    setHasLaunched(true);
+  }, []);
 
   const {
     cityCatalog,
@@ -126,7 +117,8 @@ export default function App() {
 
   const searchableOutlets = useMemo(() => {
     const byId = new Map();
-    for (const item of allSpots) {
+    const baseSpots = allSpots.length ? allSpots : localOutlets;
+    for (const item of baseSpots) {
       byId.set(item.id, item);
     }
     for (const item of cityOutlets) {
@@ -251,7 +243,8 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${hasLaunched ? "app-shell--ready" : ""}`}>
+      <LaunchSplash onComplete={handleSplashComplete} />
       <main className="map-stage">
         <FoodMap
           viewport={viewport}

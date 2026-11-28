@@ -1876,6 +1876,448 @@ textarea:focus-visible {
   }
 }
 
+/* Editorial Opener (warm paper + coral pin drop + parting clouds reveal) */
+.opener-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.opener-stage--exiting {
+  pointer-events: none;
+}
+
+.opener-backdrop {
+  position: absolute;
+  inset: 0;
+  background: #faf8f4;
+  transition: opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.opener-stage--exiting .opener-backdrop {
+  opacity: 0;
+}
+
+.opener-clouds {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.opener-cloud {
+  position: absolute;
+  top: -12%;
+  width: 72vw;
+  min-width: 380px;
+  height: 124%;
+  will-change: transform, opacity;
+}
+
+.opener-cloud--left-back {
+  left: -6vw;
+  filter: blur(26px);
+  opacity: 0.94;
+  transition:
+    transform 0.92s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
+    opacity 0.85s ease 0.14s;
+}
+
+.opener-cloud--right-back {
+  right: -6vw;
+  filter: blur(26px);
+  opacity: 0.94;
+  transition:
+    transform 0.92s cubic-bezier(0.22, 1, 0.36, 1) 0.08s,
+    opacity 0.85s ease 0.14s;
+}
+
+.opener-cloud--left-front {
+  left: -10vw;
+  filter: blur(12px);
+  opacity: 0.96;
+  transition:
+    transform 0.84s cubic-bezier(0.22, 1, 0.36, 1) 0.06s,
+    opacity 0.75s ease 0.1s;
+}
+
+.opener-cloud--right-front {
+  right: -10vw;
+  filter: blur(12px);
+  opacity: 0.96;
+  transition:
+    transform 0.84s cubic-bezier(0.22, 1, 0.36, 1) 0.06s,
+    opacity 0.75s ease 0.1s;
+}
+
+.opener-stage--exiting .opener-cloud--left-back {
+  transform: translate3d(-58vw, -4vh, 0) scale(1.12);
+  opacity: 0;
+}
+
+.opener-stage--exiting .opener-cloud--right-back {
+  transform: translate3d(58vw, 4vh, 0) scale(1.12);
+  opacity: 0;
+}
+
+.opener-stage--exiting .opener-cloud--left-front {
+  transform: translate3d(-66vw, 3vh, 0) scale(1.06);
+  opacity: 0;
+}
+
+.opener-stage--exiting .opener-cloud--right-front {
+  transform: translate3d(66vw, -3vh, 0) scale(1.06);
+  opacity: 0;
+}
+
+.opener-cloud-mist {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  height: 44vh;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(250, 248, 244, 0.7) 48%,
+    rgba(250, 248, 244, 0) 78%
+  );
+  filter: blur(20px);
+  transition:
+    transform 0.88s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.78s ease 0.05s;
+}
+
+.opener-cloud-mist--top {
+  top: -8vh;
+}
+
+.opener-cloud-mist--bottom {
+  bottom: -8vh;
+}
+
+.opener-stage--exiting .opener-cloud-mist--top {
+  transform: translateY(-38vh) scale(1.1);
+  opacity: 0;
+}
+
+.opener-stage--exiting .opener-cloud-mist--bottom {
+  transform: translateY(38vh) scale(1.1);
+  opacity: 0;
+}
+
+.opener-food-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.opener-food-slot {
+  position: absolute;
+  filter: drop-shadow(0 12px 20px rgba(24, 24, 27, 0.12));
+  transition:
+    transform 0.78s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.48s ease;
+}
+
+.opener-food-slot--noodles {
+  top: clamp(34px, 12vh, 118px);
+  left: clamp(16px, 12vw, 190px);
+  animation: openerSlotIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.12s backwards;
+}
+
+.opener-food-slot--coffee {
+  top: clamp(42px, 14vh, 130px);
+  right: clamp(18px, 13vw, 200px);
+  animation: openerSlotIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.22s backwards;
+}
+
+.opener-food-slot--croissant {
+  bottom: clamp(48px, 14vh, 130px);
+  left: clamp(20px, 15vw, 220px);
+  animation: openerSlotIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.3s backwards;
+}
+
+.opener-food-slot--pizza {
+  bottom: clamp(42px, 13vh, 120px);
+  right: clamp(20px, 14vw, 210px);
+  animation: openerSlotIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.36s backwards;
+}
+
+.opener-food-slot--momo {
+  top: 50%;
+  right: clamp(14px, 7vw, 110px);
+  margin-top: -36px;
+  animation: openerSlotIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.42s backwards;
+}
+
+@media (max-width: 640px) {
+  .opener-food-slot--momo {
+    display: none;
+  }
+
+  .opener-food-svg {
+    width: 64px;
+    height: 64px;
+  }
+}
+
+.opener-food-svg {
+  display: block;
+  will-change: transform;
+}
+
+.opener-food-svg--slow {
+  animation: openerHoverSlow 3.1s ease-in-out infinite;
+}
+
+.opener-food-svg--med {
+  animation: openerHoverMed 2.6s ease-in-out infinite 0.35s;
+}
+
+.opener-food-svg--fast {
+  animation: openerHoverFast 2.3s ease-in-out infinite 0.15s;
+}
+
+.food-steam {
+  animation: openerSteamRise 1.6s ease-in-out infinite;
+}
+
+.opener-stage--exiting .opener-food-slot--noodles {
+  opacity: 0;
+  transform: translate3d(-160px, -60px, 0) rotate(-14deg) scale(0.9);
+}
+
+.opener-stage--exiting .opener-food-slot--coffee {
+  opacity: 0;
+  transform: translate3d(160px, -60px, 0) rotate(14deg) scale(0.9);
+}
+
+.opener-stage--exiting .opener-food-slot--croissant {
+  opacity: 0;
+  transform: translate3d(-160px, 60px, 0) rotate(-12deg) scale(0.9);
+}
+
+.opener-stage--exiting .opener-food-slot--pizza {
+  opacity: 0;
+  transform: translate3d(160px, 60px, 0) rotate(12deg) scale(0.9);
+}
+
+.opener-stage--exiting .opener-food-slot--momo {
+  opacity: 0;
+  transform: translate3d(180px, 0, 0) rotate(10deg) scale(0.9);
+}
+
+@keyframes openerSlotIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.84);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes openerHoverSlow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2deg);
+  }
+  50% {
+    transform: translate3d(0, -11px, 0) rotate(3deg);
+  }
+}
+
+@keyframes openerHoverMed {
+  0%,
+  100% {
+    transform: translate3d(0, -6px, 0) rotate(2.5deg);
+  }
+  50% {
+    transform: translate3d(0, 8px, 0) rotate(-2.5deg);
+  }
+}
+
+@keyframes openerHoverFast {
+  0%,
+  100% {
+    transform: translate3d(0, 4px, 0) rotate(-3deg);
+  }
+  50% {
+    transform: translate3d(0, -9px, 0) rotate(2deg);
+  }
+}
+
+@keyframes openerSteamRise {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translateY(-3px);
+  }
+}
+
+.opener-center {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+  transition:
+    opacity 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.opener-stage--exiting .opener-center {
+  opacity: 0;
+  transform: translateY(-12px) scale(0.97);
+}
+
+.opener-pin-drop {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  margin-bottom: 4px;
+}
+
+.opener-pin-icon {
+  position: relative;
+  z-index: 1;
+  display: block;
+  animation: openerPinTouchdown 0.56s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.opener-pin-shadow {
+  width: 24px;
+  height: 5px;
+  margin-top: -2px;
+  border-radius: 999px;
+  background: rgba(24, 24, 27, 0.14);
+  animation: openerShadowSettle 0.56s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.opener-title-mask {
+  overflow: hidden;
+  padding: 2px 4px;
+}
+
+.opener-title {
+  display: inline-block;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(2.35rem, 7vw, 3.1rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #18181b;
+  animation: openerBaselineRise 0.48s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
+}
+
+.opener-title__accent {
+  color: #f06543;
+}
+
+.opener-tagline-mask {
+  overflow: hidden;
+  padding: 2px 4px;
+}
+
+.opener-tagline {
+  margin: 0;
+  font-size: clamp(0.88rem, 2.6vw, 0.98rem);
+  font-weight: 500;
+  color: #52525b;
+  animation: openerBaselineRise 0.46s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+.app-shell--ready .top-overlay__left {
+  animation: topItemEnter 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-shell--ready .top-overlay__center {
+  animation: topItemEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.04s both;
+}
+
+.app-shell--ready .top-overlay__right {
+  animation: topItemEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.app-shell--ready .floating-card {
+  animation: cardStageEnter 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+}
+
+@keyframes openerPinTouchdown {
+  0% {
+    opacity: 0;
+    transform: translateY(-34px) scale(0.88);
+  }
+  72% {
+    opacity: 1;
+    transform: translateY(2px) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes openerShadowSettle {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.3);
+  }
+  72% {
+    opacity: 1;
+    transform: scaleX(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes openerBaselineRise {
+  from {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes topItemEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardStageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
