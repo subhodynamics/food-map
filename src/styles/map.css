@@ -1516,26 +1516,32 @@ textarea:focus-visible {
 
   .floating-card {
     top: auto;
-    left: 10px;
-    right: 10px;
-    bottom: max(10px, env(safe-area-inset-bottom));
+    left: 8px;
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
     width: auto;
-    max-height: 52dvh;
+    height: 60dvh;
+    max-height: 60dvh;
     border-radius: 20px;
-    transition: max-height 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      height 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      max-height 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .floating-card--collapsed {
-    max-height: 76px;
+    height: 74px;
+    max-height: 74px;
     overflow: hidden;
   }
 
   .floating-card--half {
-    max-height: 52dvh;
+    height: 60dvh;
+    max-height: 60dvh;
   }
 
   .floating-card--expanded {
-    max-height: 80dvh;
+    height: 86dvh;
+    max-height: 86dvh;
   }
 
   .sheet-controls {
@@ -1545,6 +1551,8 @@ textarea:focus-visible {
     background: #ffffff;
     border-bottom: 1px solid #f0f0f3;
     flex: 0 0 auto;
+    touch-action: none;
+    user-select: none;
   }
 
   .sheet-handle-btn {
@@ -1608,22 +1616,58 @@ textarea:focus-visible {
   .sheet-toggle-btn {
     border: 1px solid #e4e4e7;
     border-radius: 999px;
-    padding: 5px 11px;
+    padding: 5px 10px;
     background: #fafafa;
     color: var(--ink);
-    font-size: 0.76rem;
+    font-size: 0.74rem;
     font-weight: 600;
     cursor: pointer;
   }
 
+  .spot-detail {
+    display: block;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .spot-detail__hero {
-    height: 138px;
-    padding: 10px 12px;
+    height: 112px;
+    padding: 10px 12px 30px;
+    justify-content: center;
+  }
+
+  .spot-detail__hero-top {
+    display: none;
+  }
+
+  .spot-detail__hero-center {
+    padding: 0 36px;
+    gap: 2px;
   }
 
   .spot-detail__hero-emblem {
-    width: 34px;
-    height: 34px;
+    display: none;
+  }
+
+  .spot-detail__hero-bottom {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 8px;
+  }
+
+  .spot-detail__body {
+    flex: 0 0 auto;
+    overflow: visible;
+    padding: 14px 16px 16px;
+  }
+
+  .spot-detail__footer {
+    position: sticky;
+    bottom: 0;
   }
 
   .pill-scroll-row {
