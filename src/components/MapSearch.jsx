@@ -2,27 +2,47 @@ import { useEffect, useRef, useState } from "react";
 
 import { getResultCityName, normalizeCityName } from "../utils/city";
 
-export default function MapSearch({ cityOptions, hasActiveArea, onPlaceSelect }) {
+export default function MapSearch({
+  cityOptions,
+  searchableOutlets,
+  onPlaceSelect,
+  onSelectSpot
+}) {
+  const containerRef = useRef(null);
   const inputRef = useRef(null);
   const [searchText, setSearchText] = useState("");
-  const [isFirstSearch, setIsFirstSearch] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState("");
-  const isCentered = isFirstSearch && !hasActiveArea;
 
   useEffect(() => {
-    const isDesktop =
-      typeof window !== "undefined" &&
-      window.matchMedia("(min-width: 961px)").matches;
-
-    if (isCentered && isDesktop && inputRef.current) {
-      inputRef.current.focus();
+    function handleOutsideClick(event) {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
     }
-  }, [isCentered]);
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  const query = searchText.trim().toLowerCase();
+
+  const matchingCities = query
+    ? cityOptions.filter(city => city.name.toLowerCase().includes(query)).slice(0, 4)
+    : cityOptions.slice(0, 5);
+
+  const matchingSpots = query
+    ? searchableOutlets
+        .filter(outlet => {
+          const haystack = `${outlet.name} ${outlet.neighborhood} ${outlet.category} ${outlet.bestItem} ${outlet.city}`.toLowerCase();
+          return haystack.includes(query);
+        })
+        .slice(0, 6)
+    : [];
 
   async function searchPlace() {
     const trimmedSearch = searchText.trim();
-
     if (!trimmedSearch || isSearching) {
       return;
     }
@@ -32,17 +52,22 @@ export default function MapSearch({ cityOptions, hasActiveArea, onPlaceSelect })
 
     try {
       const normalizedQuery = normalizeCityName(trimmedSearch);
-      const localMatch = cityOptions.find(city => city.id === normalizedQuery);
+      const localCityMatch = cityOptions.find(city => city.id === normalizedQuery);
 
-      if (localMatch) {
+      if (localCityMatch) {
         onPlaceSelect({
-          lat: localMatch.center[0],
-          lng: localMatch.center[1],
-          city: localMatch.name,
-          label: localMatch.name
+          lat: localCityMatch.center[0],
+          lng: localCityMatch.center[1],
+          city: localCityMatch.name,
+          label: localCityMatch.name
         });
+        setIsOpen(false);
+        return;
+      }
 
-        setIsFirstSearch(false);
+      if (matchingSpots.length === 1) {
+        onSelectSpot(matchingSpots[0]);
+        setIsOpen(false);
         return;
       }
 
@@ -69,8 +94,7 @@ export default function MapSearch({ cityOptions, hasActiveArea, onPlaceSelect })
             city: detectedCity,
             label: labelParts.join(", ") || detectedCity
           });
-
-          setIsFirstSearch(false);
+          setIsOpen(false);
           return;
         }
       }
@@ -86,7 +110,7 @@ export default function MapSearch({ cityOptions, hasActiveArea, onPlaceSelect })
       const data = await response.json();
 
       if (!data.length) {
-        setError("No city found. Try Bengaluru, Mumbai, Kolkata, or Pune.");
+        setError("No place found. Try Bengaluru, Mumbai, or a neighborhood.");
         return;
       }
 
@@ -99,8 +123,7 @@ export default function MapSearch({ cityOptions, hasActiveArea, onPlaceSelect })
         city: detectedCity,
         label: bestMatch.display_name.split(",").slice(0, 2).join(", ")
       });
-
-      setIsFirstSearch(false);
+      setIsOpen(false);
     } catch (searchError) {
       setError(searchError.message || "Search failed. Try again.");
     } finally {
@@ -113,57 +136,134 @@ export default function MapSearch({ cityOptions, hasActiveArea, onPlaceSelect })
     searchPlace();
   }
 
-  return (
-    <>
-      {isCentered && (
-        <div
-          className="map-dim-overlay"
-          onClick={() => setIsFirstSearch(false)}
-          aria-hidden="true"
-        />
-      )}
+  const showDropdown =
+    isOpen && (matchingCities.length > 0 || matchingSpots.length > 0 || query.length > 0 || Boolean(error));
 
-      <form className={`search-box ${isCentered ? "centered" : ""}`} onSubmit={handleSubmit}>
-        <div className="search-box__copy">
-          <span className="search-box__eyebrow">Find a city</span>
-          <div className="search-box__input-row">
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Search Bengaluru, Mumbai, Kolkata..."
-              value={searchText}
-              onChange={event => {
-                setSearchText(event.target.value);
-                if (error) setError("");
-              }}
-              onKeyDown={event => {
-                if (event.key === "Escape" && isCentered) {
-                  setIsFirstSearch(false);
-                }
-              }}
-              aria-label="Search for a city"
-            />
-            {searchText && (
-              <button
-                type="button"
-                className="search-box__clear"
-                onClick={() => {
-                  setSearchText("");
-                  setError("");
-                  inputRef.current?.focus();
-                }}
-                aria-label="Clear search"
-              >
-                ×
-              </button>
-            )}
-          </div>
-          {error && <p className="search-box__error">{error}</p>}
-        </div>
-        <button type="submit" className="search-box__submit" disabled={isSearching}>
-          {isSearching ? "..." : "Go"}
-        </button>
+  return (
+    <div ref={containerRef} className="top-search-wrap">
+      <form className="search-pill" onSubmit={handleSubmit}>
+        <svg
+          className="search-pill__icon"
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.3-4.3" />
+        </svg>
+
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Search places"
+          value={searchText}
+          onFocus={() => setIsOpen(true)}
+          onChange={event => {
+            setSearchText(event.target.value);
+            setIsOpen(true);
+            if (error) setError("");
+          }}
+          onKeyDown={event => {
+            if (event.key === "Escape") {
+              setIsOpen(false);
+              inputRef.current?.blur();
+            }
+          }}
+          aria-label="Search places, cities, or hidden food spots"
+        />
+
+        {searchText && (
+          <button
+            type="button"
+            className="search-pill__clear"
+            onClick={() => {
+              setSearchText("");
+              setError("");
+              inputRef.current?.focus();
+            }}
+            aria-label="Clear search"
+          >
+            ×
+          </button>
+        )}
       </form>
-    </>
+
+      {showDropdown && (
+        <div className="search-dropdown" role="listbox" aria-label="Search suggestions">
+          {error && <p className="search-dropdown__error">{error}</p>}
+
+          {matchingSpots.length > 0 && (
+            <div className="search-dropdown__group">
+              <p className="search-dropdown__label">Hidden spots</p>
+              {matchingSpots.map(spot => (
+                <button
+                  key={spot.id}
+                  type="button"
+                  className="search-dropdown__item"
+                  onClick={() => {
+                    onSelectSpot(spot);
+                    setSearchText(spot.name);
+                    setIsOpen(false);
+                  }}
+                >
+                  <span className="search-dropdown__title">{spot.name}</span>
+                  <span className="search-dropdown__meta">
+                    {spot.neighborhood}, {spot.city} · {spot.category}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {matchingCities.length > 0 && (
+            <div className="search-dropdown__group">
+              <p className="search-dropdown__label">
+                {query ? "Cities" : "Curated cities"}
+              </p>
+              {matchingCities.map(city => (
+                <button
+                  key={city.id}
+                  type="button"
+                  className="search-dropdown__item"
+                  onClick={() => {
+                    onPlaceSelect({
+                      lat: city.center[0],
+                      lng: city.center[1],
+                      city: city.name,
+                      label: city.name
+                    });
+                    setSearchText(city.name);
+                    setIsOpen(false);
+                  }}
+                >
+                  <span className="search-dropdown__title">{city.name}</span>
+                  <span className="search-dropdown__meta">{city.count} curated spots</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {query && (
+            <button
+              type="button"
+              className="search-dropdown__item search-dropdown__item--action"
+              onClick={searchPlace}
+              disabled={isSearching}
+            >
+              <span className="search-dropdown__title">
+                {isSearching ? `Searching "${searchText.trim()}"...` : `Find "${searchText.trim()}" on map`}
+              </span>
+              <span className="search-dropdown__meta">Press Enter</span>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
