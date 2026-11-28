@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
 import {
   AttributionControl,
   Map as MapLibreMap,
@@ -14,13 +13,17 @@ import "maplibre-gl/dist/maplibre-gl.css";
 setWorkerUrl(maplibreWorkerUrl);
 
 import {
+  createCityMarkerElement,
   createSpotMarkerElement,
   createUserLocationElement
 } from "../../assets/icons";
-import { formatDistance } from "../../utils/distance";
-import { getGoogleMapsDirectionsUrl } from "../../utils/maps";
 
 const MAP_STYLES = [
+  {
+    id: "liberty",
+    label: "Atlas",
+    url: "https://tiles.openfreemap.org/styles/liberty"
+  },
   {
     id: "voyager",
     label: "Crisp",
@@ -58,55 +61,25 @@ const OSM_FALLBACK_STYLE = {
   ]
 };
 
-function OutletPopup({ outlet }) {
-  return (
-    <div className="popup-card">
-      <p className="popup-card__eyebrow">
-        {outlet.neighborhood} · {outlet.category}
-      </p>
-      <h3>{outlet.name}</h3>
-      <p className="popup-card__story">{outlet.whyUnderrated}</p>
-      <p className="popup-card__detail">
-        <strong>Known for:</strong> {outlet.knownFor}
-      </p>
-      <p className="popup-card__detail">
-        <strong>Best order:</strong> {outlet.bestItem}
-      </p>
-      <div className="tag-row">
-        {outlet.tags.map(tag => (
-          <span key={tag} className="tag">
-            {tag}
-          </span>
-        ))}
-      </div>
-      <div className="popup-card__footer">
-        <span>{outlet.priceRange}</span>
-        <span>{outlet.vibe}</span>
-        <span>{formatDistance(outlet.distanceKm, outlet.distanceReferenceLabel)}</span>
-      </div>
-      <p className="popup-card__detail">
-        <strong>Curated by:</strong> {outlet.curatedBy}
-      </p>
-      <p className="popup-card__detail">
-        <strong>Verified:</strong> {outlet.lastVerified}
-      </p>
-      <a
-        href={getGoogleMapsDirectionsUrl(outlet.lat, outlet.lng)}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Directions on GoogleMap
-      </a>
-    </div>
-  );
+function getDesktopMapPadding() {
+  if (typeof window === "undefined") {
+    return { top: 72, bottom: 32, left: 32, right: 32 };
+  }
+  if (window.innerWidth > 960) {
+    return { top: 76, bottom: 36, left: 360, right: 48 };
+  }
+  return { top: 112, bottom: 220, left: 24, right: 24 };
 }
 
 export default function FoodMap({
   viewport,
   user,
   outlets,
+  cityCatalog,
+  activeCity,
   activeOutletId,
   onSelectOutlet,
+  onSelectCity,
   onClearSelection
 }) {
   const containerRef = useRef(null);
@@ -115,18 +88,16 @@ export default function FoodMap({
   const hasFallbackStyleRef = useRef(false);
   const userMarkerRef = useRef(null);
   const spotMarkersRef = useRef([]);
-  const popupRef = useRef(null);
-  const isProgrammaticCloseRef = useRef(false);
+  const cityMarkersRef = useRef([]);
   const onSelectOutletRef = useRef(onSelectOutlet);
+  const onSelectCityRef = useRef(onSelectCity);
   const onClearSelectionRef = useRef(onClearSelection);
   const [activeStyleId, setActiveStyleId] = useState(MAP_STYLES[0].id);
-  const [popupElement] = useState(() => document.createElement("div"));
+  const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
 
   onSelectOutletRef.current = onSelectOutlet;
+  onSelectCityRef.current = onSelectCity;
   onClearSelectionRef.current = onClearSelection;
-
-  const activeOutlet =
-    outlets.find(outlet => outlet.id === activeOutletId) || null;
 
   useEffect(() => {
     if (!containerRef.current) {
@@ -150,6 +121,10 @@ export default function FoodMap({
       "bottom-left"
     );
 
+    map.on("click", () => {
+      setIsLayerMenuOpen(false);
+    });
+
     map.on("error", event => {
       const status = event?.error?.status;
       if (!hasFallbackStyleRef.current && !map.isStyleLoaded() && status && status >= 400) {
@@ -161,11 +136,6 @@ export default function FoodMap({
     mapRef.current = map;
 
     return () => {
-      if (popupRef.current) {
-        isProgrammaticCloseRef.current = true;
-        popupRef.current.remove();
-        popupRef.current = null;
-      }
       map.remove();
       mapRef.current = null;
       hasMountedViewportRef.current = false;
@@ -176,6 +146,7 @@ export default function FoodMap({
 
   function handleStyleChange(styleOption) {
     setActiveStyleId(styleOption.id);
+    setIsLayerMenuOpen(false);
     if (mapRef.current) {
       hasFallbackStyleRef.current = false;
       mapRef.current.setStyle(styleOption.url);
@@ -184,7 +155,6 @@ export default function FoodMap({
 
   useEffect(() => {
     const map = mapRef.current;
-
     if (!map) {
       return;
     }
@@ -197,14 +167,14 @@ export default function FoodMap({
     map.flyTo({
       center: [viewport.center[1], viewport.center[0]],
       zoom: viewport.zoom,
-      duration: 1100,
+      padding: getDesktopMapPadding(),
+      duration: 950,
       essential: true
     });
   }, [viewport]);
 
   useEffect(() => {
     const map = mapRef.current;
-
     if (!map) {
       return undefined;
     }
@@ -237,7 +207,6 @@ export default function FoodMap({
 
   useEffect(() => {
     const map = mapRef.current;
-
     if (!map) {
       return undefined;
     }
@@ -248,10 +217,10 @@ export default function FoodMap({
 
       button.addEventListener("click", event => {
         event.stopPropagation();
-        onSelectOutletRef.current(outlet.id);
+        onSelectOutletRef.current(outlet);
       });
 
-      const marker = new Marker({ element, anchor: "bottom" })
+      const marker = new Marker({ element, anchor: "center" })
         .setLngLat([outlet.lng, outlet.lat])
         .addTo(map);
 
@@ -278,56 +247,79 @@ export default function FoodMap({
 
   useEffect(() => {
     const map = mapRef.current;
-
     if (!map) {
-      return;
+      return undefined;
     }
 
-    if (popupRef.current) {
-      isProgrammaticCloseRef.current = true;
-      popupRef.current.remove();
-      popupRef.current = null;
-      isProgrammaticCloseRef.current = false;
+    for (const item of cityMarkersRef.current) {
+      item.marker.remove();
+    }
+    cityMarkersRef.current = [];
+
+    if (activeCity || outlets.length > 0 || !cityCatalog.length) {
+      return undefined;
     }
 
-    if (!activeOutlet) {
-      return;
-    }
+    const nextCityMarkers = cityCatalog.map(city => {
+      const element = createCityMarkerElement(city);
+      const button = element.querySelector(".city-marker");
 
-    const popup = new Popup({
-      offset: [0, -52],
-      closeOnClick: false,
-      maxWidth: "min(300px, calc(100vw - 2.5rem))"
-    })
-      .setLngLat([activeOutlet.lng, activeOutlet.lat])
-      .setDOMContent(popupElement)
-      .addTo(map);
+      button.addEventListener("click", event => {
+        event.stopPropagation();
+        onSelectCityRef.current(city);
+      });
 
-    popup.on("close", () => {
-      if (!isProgrammaticCloseRef.current) {
-        onClearSelectionRef.current();
-      }
+      const marker = new Marker({ element, anchor: "center" })
+        .setLngLat([city.center[1], city.center[0]])
+        .addTo(map);
+
+      return { id: city.id, marker };
     });
 
-    popupRef.current = popup;
-  }, [activeOutlet, popupElement]);
+    cityMarkersRef.current = nextCityMarkers;
+
+    return () => {
+      for (const item of nextCityMarkers) {
+        item.marker.remove();
+      }
+      cityMarkersRef.current = [];
+    };
+  }, [activeCity, outlets.length, cityCatalog]);
 
   return (
     <>
       <div ref={containerRef} className="map-canvas" />
-      <div className="map-style-switcher" role="group" aria-label="Map style">
-        {MAP_STYLES.map(styleOption => (
-          <button
-            key={styleOption.id}
-            type="button"
-            className={`map-style-pill ${activeStyleId === styleOption.id ? "map-style-pill--active" : ""}`}
-            onClick={() => handleStyleChange(styleOption)}
-          >
-            {styleOption.label}
-          </button>
-        ))}
+
+      <div className="map-info-wrap">
+        {isLayerMenuOpen && (
+          <div className="map-style-popover" role="dialog" aria-label="Map appearance">
+            <p className="map-style-popover__title">Map style</p>
+            <div className="map-style-options">
+              {MAP_STYLES.map(styleOption => (
+                <button
+                  key={styleOption.id}
+                  type="button"
+                  className={`map-style-pill ${activeStyleId === styleOption.id ? "map-style-pill--active" : ""}`}
+                  onClick={() => handleStyleChange(styleOption)}
+                >
+                  {styleOption.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <button
+          type="button"
+          className={`map-info-btn ${isLayerMenuOpen ? "map-info-btn--active" : ""}`}
+          onClick={() => setIsLayerMenuOpen(prev => !prev)}
+          aria-label="Toggle map style options"
+          aria-expanded={isLayerMenuOpen}
+          title="Map style"
+        >
+          i
+        </button>
       </div>
-      {activeOutlet && createPortal(<OutletPopup outlet={activeOutlet} />, popupElement)}
     </>
   );
 }

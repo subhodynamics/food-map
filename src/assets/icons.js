@@ -1,17 +1,7 @@
-const PIN_SVG = `
-  <svg viewBox="0 0 34 42" width="34" height="42" aria-hidden="true">
-    <path
-      d="M17 1.5C8.99 1.5 2.5 7.99 2.5 16c0 10.17 12.22 22.3 13.11 23.16a1.98 1.98 0 0 0 2.78 0C19.28 38.3 31.5 26.17 31.5 16 31.5 7.99 25.01 1.5 17 1.5Z"
-      fill="currentColor"
-      stroke="#ffffff"
-      stroke-width="2.4"
-    />
-    <circle cx="17" cy="15.5" r="6" fill="#111318" />
-    <circle cx="17" cy="15.5" r="2.6" fill="#ffffff" />
-  </svg>
-`;
+import { getCategoryIconSvg, getCategoryTheme } from "../constants/categories";
 
 export function createSpotMarkerElement(outlet, isActive) {
+  const theme = getCategoryTheme(outlet.category);
   const wrapper = document.createElement("div");
   wrapper.className = `spot-marker-wrap ${isActive ? "spot-marker-wrap--active" : ""}`;
 
@@ -19,9 +9,41 @@ export function createSpotMarkerElement(outlet, isActive) {
   button.type = "button";
   button.className = `spot-marker ${isActive ? "spot-marker--active" : ""}`;
   button.setAttribute("aria-label", `${outlet.name} in ${outlet.neighborhood}`);
-  button.innerHTML = `${PIN_SVG}<span class="spot-marker__label"></span>`;
-  button.querySelector(".spot-marker__label").textContent = outlet.name;
 
+  const badge = document.createElement("span");
+  badge.className = "spot-marker__badge";
+  badge.style.background = theme.markerBg;
+  badge.innerHTML = getCategoryIconSvg(outlet.category, 18);
+
+  const label = document.createElement("span");
+  label.className = "spot-marker__label";
+  label.textContent = outlet.name;
+
+  button.appendChild(badge);
+  button.appendChild(label);
+  wrapper.appendChild(button);
+  return wrapper;
+}
+
+export function createCityMarkerElement(city) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "city-marker-wrap";
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "city-marker";
+  button.setAttribute("aria-label", `Explore ${city.name} (${city.count} spots)`);
+
+  const count = document.createElement("span");
+  count.className = "city-marker__count";
+  count.textContent = String(city.count);
+
+  const label = document.createElement("span");
+  label.className = "city-marker__label";
+  label.textContent = city.name;
+
+  button.appendChild(count);
+  button.appendChild(label);
   wrapper.appendChild(button);
   return wrapper;
 }
