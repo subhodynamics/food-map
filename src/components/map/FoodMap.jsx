@@ -17,6 +17,7 @@ import {
   createSpotMarkerElement,
   createUserLocationElement
 } from "../../assets/icons";
+import { isSoundEnabled, setSoundEnabled } from "../../utils/sounds";
 
 const MAP_STYLES = [
   {
@@ -94,6 +95,7 @@ export default function FoodMap({
   const onClearSelectionRef = useRef(onClearSelection);
   const [activeStyleId, setActiveStyleId] = useState(MAP_STYLES[0].id);
   const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
+  const [soundOn, setSoundOn] = useState(() => isSoundEnabled());
 
   onSelectOutletRef.current = onSelectOutlet;
   onSelectCityRef.current = onSelectCity;
@@ -308,19 +310,62 @@ export default function FoodMap({
                 </button>
               ))}
             </div>
+            <div className="map-sound-row">
+              <span>Sound effects</span>
+              <button
+                type="button"
+                className={`map-style-pill ${soundOn ? "map-style-pill--active" : ""}`}
+                onClick={() => {
+                  const next = !soundOn;
+                  setSoundEnabled(next);
+                  setSoundOn(next);
+                }}
+              >
+                {soundOn ? "On" : "Muted"}
+              </button>
+            </div>
           </div>
         )}
 
-        <button
-          type="button"
-          className={`map-info-btn ${isLayerMenuOpen ? "map-info-btn--active" : ""}`}
-          onClick={() => setIsLayerMenuOpen(prev => !prev)}
-          aria-label="Toggle map style options"
-          aria-expanded={isLayerMenuOpen}
-          title="Map style"
-        >
-          i
-        </button>
+        <div className="map-bottom-actions">
+          <button
+            type="button"
+            className={`map-info-btn ${!soundOn ? "map-info-btn--muted" : ""}`}
+            onClick={() => {
+              const next = !soundOn;
+              setSoundEnabled(next);
+              setSoundOn(next);
+            }}
+            aria-label={soundOn ? "Mute sound effects" : "Unmute sound effects"}
+            aria-pressed={!soundOn}
+            title={soundOn ? "Mute sound" : "Unmute sound"}
+          >
+            {soundOn ? (
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                <line x1="22" x2="16" y1="9" y2="15" />
+                <line x1="16" x2="22" y1="9" y2="15" />
+              </svg>
+            )}
+          </button>
+
+          <button
+            type="button"
+            className={`map-info-btn ${isLayerMenuOpen ? "map-info-btn--active" : ""}`}
+            onClick={() => setIsLayerMenuOpen(prev => !prev)}
+            aria-label="Toggle map style options"
+            aria-expanded={isLayerMenuOpen}
+            title="Map style"
+          >
+            i
+          </button>
+        </div>
       </div>
     </>
   );

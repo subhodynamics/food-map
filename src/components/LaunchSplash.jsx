@@ -1,4 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import {
+  isSoundEnabled,
+  playCloudWhooshSound,
+  playOpenerSound,
+  unlockAudio
+} from "../utils/sounds";
 
 function prefersReducedMotion() {
   return (
@@ -11,6 +18,29 @@ export default function LaunchSplash({ onComplete }) {
   const [phase, setPhase] = useState(() =>
     prefersReducedMotion() ? "done" : "playing"
   );
+  const hasPlayedIntroRef = useRef(false);
+  const hasAttemptedAutoPlayRef = useRef(false);
+  const exitTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (
+      phase !== "playing" ||
+      hasPlayedIntroRef.current ||
+      hasAttemptedAutoPlayRef.current
+    ) {
+      return undefined;
+    }
+
+    hasAttemptedAutoPlayRef.current = true;
+
+    playOpenerSound().then(played => {
+      if (played) {
+        hasPlayedIntroRef.current = true;
+      }
+    });
+
+    return undefined;
+  }, [phase]);
 
   useEffect(() => {
     if (phase === "done") {
@@ -19,12 +49,13 @@ export default function LaunchSplash({ onComplete }) {
     }
 
     if (phase === "playing") {
-      const exitTimer = window.setTimeout(() => {
+      exitTimerRef.current = window.setTimeout(() => {
         setPhase("exiting");
-      }, 2000);
-      return () => window.clearTimeout(exitTimer);
+      }, 2100);
+      return () => window.clearTimeout(exitTimerRef.current);
     }
 
+    playCloudWhooshSound();
     onComplete?.();
     const doneTimer = window.setTimeout(() => {
       setPhase("done");
@@ -32,6 +63,28 @@ export default function LaunchSplash({ onComplete }) {
 
     return () => window.clearTimeout(doneTimer);
   }, [phase, onComplete]);
+
+  function handleOpenerTap() {
+    if (phase !== "playing") {
+      return;
+    }
+
+    unlockAudio();
+
+    if (!hasPlayedIntroRef.current && isSoundEnabled()) {
+      hasPlayedIntroRef.current = true;
+      playOpenerSound();
+
+      window.clearTimeout(exitTimerRef.current);
+      exitTimerRef.current = window.setTimeout(() => {
+        setPhase("exiting");
+      }, 680);
+      return;
+    }
+
+    window.clearTimeout(exitTimerRef.current);
+    setPhase("exiting");
+  }
 
   if (phase === "done") {
     return null;
@@ -42,7 +95,7 @@ export default function LaunchSplash({ onComplete }) {
   return (
     <div
       className={`opener-stage ${isExiting ? "opener-stage--exiting" : ""}`}
-      onClick={() => setPhase("exiting")}
+      onClick={handleOpenerTap}
       aria-hidden="true"
     >
       <div className="opener-backdrop" />
@@ -112,23 +165,17 @@ export default function LaunchSplash({ onComplete }) {
             </defs>
             <ellipse cx="48" cy="46" rx="31" ry="10" fill="#7c2d12" />
             <ellipse cx="48" cy="46" rx="28" ry="8" fill="url(#noodle-broth)" />
-            {/* Noodles */}
             <path d="M26 46c4-8 10-8 14 0s10 8 14 0 10-8 14 0" stroke="#fef08a" strokeWidth="3.8" strokeLinecap="round" />
             <path d="M29 43c4-6 9-6 13 0s9 6 13 0 9-6 12 0" stroke="#fde047" strokeWidth="3.2" strokeLinecap="round" />
-            {/* Soft-boiled egg */}
             <ellipse cx="61" cy="42" rx="7" ry="4.5" fill="#fffbeb" />
             <ellipse cx="61" cy="42" rx="3.4" ry="2.2" fill="#f59e0b" />
-            {/* Scallions */}
             <circle cx="38" cy="41" r="2.2" fill="#22c55e" />
             <circle cx="44" cy="39" r="1.9" fill="#16a34a" />
-            {/* Chopsticks */}
             <path d="M36 41L66 15" stroke="#78350f" strokeWidth="3.2" strokeLinecap="round" />
             <path d="M43 43L73 20" stroke="#92400e" strokeWidth="3" strokeLinecap="round" />
-            {/* Bowl */}
             <path d="M17 46a31 31 0 0 0 62 0H17Z" fill="url(#noodle-bowl)" />
             <path d="M24 54c5 1 11 1.5 18 1.5" stroke="rgba(255,255,255,0.28)" strokeWidth="2.5" strokeLinecap="round" />
             <rect x="37" y="75" width="22" height="5" rx="2.5" fill="#9a3412" />
-            {/* Steam */}
             <path className="food-steam" d="M32 30c-2-4 2-7 0-11M46 28c-2-4 2-7 0-11" stroke="#a1a1aa" strokeWidth="2.2" strokeLinecap="round" />
           </svg>
         </div>
