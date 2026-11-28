@@ -1,3 +1,5 @@
+import { useRef, useState } from "react";
+
 import { getCategoryTheme } from "../../constants/categories";
 import { GEOLOCATION_STATUS } from "../../constants/explorer";
 import { formatDistance } from "../../utils/distance";
@@ -79,7 +81,17 @@ export default function DiscoveryPanel({
       ? `${activeLabel} · ${visibleOutlets.length} ${visibleOutlets.length === 1 ? "spot" : "spots"}`
       : `${cityCatalog.length} cities · ${totalOutlets} hidden spots`;
 
+  const sheetRef = useRef(null);
+  const dragStartRef = useRef(null);
+  const latestHeightRef = useRef(null);
+  const didDragRef = useRef(false);
+  const [dragHeightPx, setDragHeightPx] = useState(null);
+
   function cycleSheetState() {
+    if (didDragRef.current) {
+      didDragRef.current = false;
+      return;
+    }
     if (sheetState === "collapsed") {
       onChangeSheetState("half");
     } else if (sheetState === "half") {
@@ -89,9 +101,99 @@ export default function DiscoveryPanel({
     }
   }
 
+  function handleTouchStart(event) {
+    if (event.target.closest(".sheet-summary-actions")) {
+      return;
+    }
+    const touch = event.touches?.[0];
+    const sheetEl = sheetRef.current;
+    if (!touch || !sheetEl) {
+      return;
+    }
+    const currentHeight = sheetEl.getBoundingClientRect().height;
+    didDragRef.current = false;
+    latestHeightRef.current = currentHeight;
+    dragStartRef.current = {
+      startY: touch.clientY,
+      startHeight: currentHeight
+    };
+  }
+
+  function handleTouchMove(event) {
+    if (!dragStartRef.current) {
+      return;
+    }
+    const touch = event.touches?.[0];
+    if (!touch) {
+      return;
+    }
+    const deltaY = dragStartRef.current.startY - touch.clientY;
+    if (Math.abs(deltaY) > 6) {
+      didDragRef.current = true;
+    }
+    const viewportHeight = window.innerHeight || 800;
+    const minHeight = 74;
+    const maxHeight = Math.round(viewportHeight * 0.88);
+    const nextHeight = Math.max(
+      minHeight,
+      Math.min(maxHeight, dragStartRef.current.startHeight + deltaY)
+    );
+    latestHeightRef.current = nextHeight;
+    setDragHeightPx(nextHeight);
+  }
+
+  function handleTouchEnd() {
+    if (!dragStartRef.current) {
+      return;
+    }
+    const startHeight = dragStartRef.current.startHeight;
+    const finalHeight = latestHeightRef.current ?? startHeight;
+    const delta = finalHeight - startHeight;
+    const viewportHeight = window.innerHeight || 800;
+    const ratio = finalHeight / viewportHeight;
+
+    dragStartRef.current = null;
+    latestHeightRef.current = null;
+    setDragHeightPx(null);
+
+    if (!didDragRef.current) {
+      return;
+    }
+
+    if (delta > 36) {
+      onChangeSheetState(sheetState === "collapsed" && ratio < 0.72 ? "half" : "expanded");
+    } else if (delta < -36) {
+      onChangeSheetState(sheetState === "expanded" && ratio > 0.3 ? "half" : "collapsed");
+    } else if (ratio < 0.24) {
+      onChangeSheetState("collapsed");
+    } else if (ratio > 0.7) {
+      onChangeSheetState("expanded");
+    } else {
+      onChangeSheetState("half");
+    }
+  }
+
+  const dragStyle = dragHeightPx
+    ? {
+        height: `${dragHeightPx}px`,
+        maxHeight: `${dragHeightPx}px`,
+        transition: "none"
+      }
+    : undefined;
+
   return (
-    <aside className={`floating-card floating-card--${sheetState}`}>
-      <div className="sheet-controls">
+    <aside
+      ref={sheetRef}
+      className={`floating-card floating-card--${sheetState}`}
+      style={dragStyle}
+    >
+      <div
+        className="sheet-controls"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+      >
         <button
           type="button"
           className="sheet-handle-btn"
