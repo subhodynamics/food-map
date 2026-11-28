@@ -17,6 +17,9 @@ export function useOutlets(activeCity) {
   const [totalOutlets, setTotalOutlets] = useState(() =>
     isSupabaseConfigured ? 0 : localOutlets.length
   );
+  const [allSpots, setAllSpots] = useState(() =>
+    isSupabaseConfigured ? [] : localOutlets
+  );
   const [cityCache, setCityCache] = useState({});
   const [loadingCity, setLoadingCity] = useState(null);
   const [dataError, setDataError] = useState("");
@@ -30,6 +33,7 @@ export function useOutlets(activeCity) {
         if (!isCancelled) {
           setCityCatalog(result.cityCatalog);
           setTotalOutlets(result.totalOutlets);
+          setAllSpots(result.allSpots || []);
           if (result.warning) {
             setDataError("Live database unreachable; showing curated offline list.");
           }
@@ -91,6 +95,7 @@ export function useOutlets(activeCity) {
   return {
     cityCatalog,
     totalOutlets,
+    allSpots,
     cityOutlets,
     isLoadingCity,
     dataError,

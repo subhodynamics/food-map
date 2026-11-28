@@ -89,7 +89,7 @@ textarea:focus-visible {
   z-index: 900;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
-  align-items: center;
+  align-items: start;
   gap: 12px;
   pointer-events: none;
 }
@@ -108,12 +108,63 @@ textarea:focus-visible {
 
 .top-overlay__center {
   justify-self: center;
-  width: min(360px, 42vw);
+  flex-direction: column;
+  gap: 8px;
+  width: min(460px, 48vw);
 }
 
 .top-overlay__right {
   justify-self: end;
   gap: 8px;
+}
+
+.city-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.city-bar__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  padding: 5px 11px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  color: var(--ink-soft);
+  font-size: 0.76rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.14s ease, background-color 0.14s ease;
+}
+
+.city-bar__pill:hover {
+  transform: translateY(-1px);
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.city-bar__pill--active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+
+.city-bar__pill--active:hover {
+  background: #27272a;
+  color: #ffffff;
+}
+
+.city-bar__count {
+  font-size: 0.68rem;
+  opacity: 0.75;
 }
 
 .brand-pill-btn {
@@ -202,7 +253,8 @@ textarea:focus-visible {
 /* Top-Center Search Pill */
 .top-search-wrap {
   position: relative;
-  width: 100%;
+  width: min(360px, 100%);
+  z-index: 20;
 }
 
 .search-pill {
@@ -341,12 +393,12 @@ textarea:focus-visible {
 /* Left Floating Editorial Card */
 .floating-card {
   position: absolute;
-  top: 70px;
+  top: 98px;
   left: 16px;
   z-index: 850;
   width: 325px;
-  max-height: calc(100vh - 86px);
-  max-height: calc(100dvh - 86px);
+  max-height: calc(100vh - 114px);
+  max-height: calc(100dvh - 114px);
   display: flex;
   flex-direction: column;
   background: var(--card-bg);
@@ -1512,6 +1564,28 @@ textarea:focus-visible {
   .top-overlay__center {
     grid-area: center;
     width: 100%;
+    align-items: stretch;
+  }
+
+  .top-search-wrap {
+    width: 100%;
+  }
+
+  .city-bar {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .city-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .city-bar__pill {
+    flex: 0 0 auto;
   }
 
   .floating-card {
@@ -1688,13 +1762,13 @@ textarea:focus-visible {
   }
 
   .maplibregl-ctrl-bottom-right {
-    top: calc(max(10px, env(safe-area-inset-top)) + 100px) !important;
+    top: calc(max(10px, env(safe-area-inset-top)) + 140px) !important;
     bottom: auto !important;
     right: 0 !important;
   }
 
   .map-info-wrap {
-    top: calc(max(10px, env(safe-area-inset-top)) + 190px);
+    top: calc(max(10px, env(safe-area-inset-top)) + 230px);
     bottom: auto;
     right: 10px;
     flex-direction: column-reverse;

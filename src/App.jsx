@@ -47,6 +47,7 @@ export default function App() {
   const {
     cityCatalog,
     totalOutlets,
+    allSpots,
     cityOutlets,
     isLoadingCity,
     dataError,
@@ -125,14 +126,14 @@ export default function App() {
 
   const searchableOutlets = useMemo(() => {
     const byId = new Map();
-    for (const item of localOutlets) {
+    for (const item of allSpots) {
       byId.set(item.id, item);
     }
     for (const item of cityOutlets) {
       byId.set(item.id, item);
     }
     return Array.from(byId.values());
-  }, [cityOutlets]);
+  }, [allSpots, cityOutlets]);
 
   function focusOutlet(outlet) {
     const targetCityId = normalizeCityName(outlet.city);
@@ -289,6 +290,28 @@ export default function App() {
               onPlaceSelect={handleAreaSearch}
               onSelectSpot={focusOutlet}
             />
+            {cityCatalog.length > 0 && (
+              <nav className="city-bar" aria-label="Cities">
+                <button
+                  type="button"
+                  className={`city-bar__pill ${!activeCity ? "city-bar__pill--active" : ""}`}
+                  onClick={resetArea}
+                >
+                  All India
+                </button>
+                {cityCatalog.map(city => (
+                  <button
+                    key={city.id}
+                    type="button"
+                    className={`city-bar__pill ${activeCity === city.id ? "city-bar__pill--active" : ""}`}
+                    onClick={() => exploreCity(city)}
+                  >
+                    <span>{city.name}</span>
+                    <span className="city-bar__count">{city.count}</span>
+                  </button>
+                ))}
+              </nav>
+            )}
           </div>
 
           <div className="top-overlay__right">

@@ -19,13 +19,14 @@ export async function fetchCitySummaries() {
     return {
       cityCatalog,
       totalOutlets: localOutlets.length,
+      allSpots: localOutlets,
       source: "local"
     };
   }
 
   const { data, error } = await supabase
     .from("outlets")
-    .select("city, city_slug, lat, lng")
+    .select("id, name, city, city_slug, neighborhood, category, best_item, lat, lng")
     .eq("status", "approved");
 
   if (error) {
@@ -34,22 +35,30 @@ export async function fetchCitySummaries() {
     return {
       cityCatalog,
       totalOutlets: localOutlets.length,
+      allSpots: localOutlets,
       source: "local-fallback",
       warning: error.message
     };
   }
 
-  const normalizedRows = (data || []).map(row => ({
+  const allSpots = (data || []).map(row => ({
+    id: row.id,
+    name: row.name,
     city: row.city,
+    citySlug: row.city_slug || normalizeCityName(row.city),
+    neighborhood: row.neighborhood,
+    category: row.category,
+    bestItem: row.best_item || "",
     lat: Number(row.lat),
     lng: Number(row.lng)
   }));
 
-  const { cityCatalog } = buildCityCatalog(normalizedRows);
+  const { cityCatalog } = buildCityCatalog(allSpots);
 
   return {
     cityCatalog,
-    totalOutlets: normalizedRows.length,
+    totalOutlets: allSpots.length,
+    allSpots,
     source: "supabase"
   };
 }

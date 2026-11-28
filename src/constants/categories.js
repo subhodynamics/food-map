@@ -79,6 +79,60 @@ const CATEGORY_THEMES = {
     markerBg: "#6a2e94",
     iconPath:
       '<path d="M7 10a5 5 0 0 1 10 0"/><path d="M5 10h14l-1.5 9a2 2 0 0 1-2 1.7H8.5a2 2 0 0 1-2-1.7Z"/><circle cx="12" cy="4" r="1.5"/>'
+  },
+  Coastal: {
+    accent: "#0369a1",
+    badgeBg: "#e0f2fe",
+    badgeText: "#075985",
+    heroGradient: "linear-gradient(145deg, #0d2638 0%, #145374 54%, #2c88b0 100%)",
+    markerBg: "#135d82",
+    iconPath:
+      '<path d="M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z"/><path d="M18 12v.5"/><path d="M16 17.93a9.77 9.77 0 0 1 0-11.86"/><path d="M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33"/>'
+  },
+  "Irani Cafe": {
+    accent: "#9f580a",
+    badgeBg: "#fef3c7",
+    badgeText: "#78350f",
+    heroGradient: "linear-gradient(145deg, #2d1e0f 0%, #6e451b 54%, #b57731 100%)",
+    markerBg: "#75481a",
+    iconPath:
+      '<path d="M10 2v2"/><path d="M14 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/>'
+  },
+  Biryani: {
+    accent: "#b91c1c",
+    badgeBg: "#fee2e2",
+    badgeText: "#7f1d1d",
+    heroGradient: "linear-gradient(145deg, #351313 0%, #832222 54%, #c94c38 100%)",
+    markerBg: "#8c2323",
+    iconPath:
+      '<path d="M4 13a8 8 0 0 0 16 0Z"/><path d="M5 13c1-3.5 3.8-5.5 7-5.5s6 2 7 5.5"/><path d="M9 4c0 1.2 1 1.8 1 3"/><path d="M14 3.5c0 1.2 1 1.8 1 3"/>'
+  },
+  Mughlai: {
+    accent: "#a16207",
+    badgeBg: "#fef9c3",
+    badgeText: "#713f12",
+    heroGradient: "linear-gradient(145deg, #301b10 0%, #74391c 54%, #b8622b 100%)",
+    markerBg: "#7d3d1d",
+    iconPath:
+      '<path d="M4 20 20 4"/><path d="M7 13l4 4"/><path d="M10 10l4 4"/><path d="M13 7l4 4"/>'
+  },
+  Continental: {
+    accent: "#475569",
+    badgeBg: "#e2e8f0",
+    badgeText: "#1e293b",
+    heroGradient: "linear-gradient(145deg, #1e293b 0%, #334155 54%, #64748b 100%)",
+    markerBg: "#334155",
+    iconPath:
+      '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>'
+  },
+  Bengali: {
+    accent: "#b45309",
+    badgeBg: "#ffedd5",
+    badgeText: "#9a3412",
+    heroGradient: "linear-gradient(145deg, #2e1d12 0%, #7c3f16 54%, #c26d27 100%)",
+    markerBg: "#8a4215",
+    iconPath:
+      '<path d="M3 12h18"/><path d="M5 12a7 7 0 0 0 14 0"/><path d="M8 7c0-1.2.8-2 .8-3"/><path d="M12 7c0-1.2.8-2 .8-3"/><path d="M16 7c0-1.2.8-2 .8-3"/>'
   }
 };
 
