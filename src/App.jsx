@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import AddSpotModal from "./components/AddSpotModal";
 import LaunchSplash from "./components/LaunchSplash";
@@ -17,6 +17,11 @@ import { useOutlets } from "./hooks/useOutlets";
 import { fetchOutletsByCity } from "./services/outletsService";
 import "./styles/map.css";
 import { normalizeCityName } from "./utils/city";
+import {
+  playClickSound,
+  playSurpriseSound,
+  unlockAudio
+} from "./utils/sounds";
 
 export default function App() {
   const { user, locationState } = useCurrentLocation();
@@ -33,6 +38,32 @@ export default function App() {
 
   const handleSplashComplete = useCallback(() => {
     setHasLaunched(true);
+  }, []);
+
+  useEffect(() => {
+    function handleFirstUnlock() {
+      unlockAudio();
+    }
+
+    function handleGlobalButtonClick(event) {
+      unlockAudio();
+      const target = event.target?.closest?.("button, a[href]");
+      if (!target || target.disabled) {
+        return;
+      }
+      if (target.classList.contains("surprise-btn")) {
+        playSurpriseSound();
+        return;
+      }
+      playClickSound();
+    }
+
+    window.addEventListener("pointerdown", handleFirstUnlock, { passive: true });
+    document.addEventListener("click", handleGlobalButtonClick, true);
+    return () => {
+      window.removeEventListener("pointerdown", handleFirstUnlock);
+      document.removeEventListener("click", handleGlobalButtonClick, true);
+    };
   }, []);
 
   const {

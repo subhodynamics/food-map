@@ -1255,6 +1255,16 @@ textarea:focus-visible {
   color: #ffffff;
 }
 
+.map-info-btn--muted {
+  color: #a1a1aa;
+}
+
+.map-bottom-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .map-style-popover {
   padding: 10px;
   border-radius: 14px;
@@ -1278,6 +1288,18 @@ textarea:focus-visible {
 .map-style-options {
   display: flex;
   gap: 4px;
+}
+
+.map-sound-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 6px;
+  border-top: 1px solid #f0f0f3;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--ink-soft);
 }
 
 .map-style-pill {
