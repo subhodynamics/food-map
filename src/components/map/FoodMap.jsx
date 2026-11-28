@@ -112,6 +112,8 @@ export default function FoodMap({
       attributionControl: false
     });
 
+    map.setPadding(getDesktopMapPadding());
+
     map.addControl(
       new NavigationControl({ showCompass: false }),
       "bottom-right"
