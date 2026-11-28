@@ -1876,6 +1876,169 @@ textarea:focus-visible {
   }
 }
 
+/* Editorial Opener (warm paper + coral pin drop + clean baseline reveal) */
+.opener-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 2500;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #faf8f4;
+  cursor: pointer;
+  transition:
+    opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.opener-stage--exiting {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.opener-center {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.opener-pin-drop {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  margin-bottom: 4px;
+}
+
+.opener-pin-icon {
+  position: relative;
+  z-index: 1;
+  display: block;
+  animation: openerPinTouchdown 0.56s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.opener-pin-shadow {
+  width: 24px;
+  height: 5px;
+  margin-top: -2px;
+  border-radius: 999px;
+  background: rgba(24, 24, 27, 0.14);
+  animation: openerShadowSettle 0.56s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.opener-title-mask {
+  overflow: hidden;
+  padding: 2px 4px;
+}
+
+.opener-title {
+  display: inline-block;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(2.35rem, 7vw, 3.1rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #18181b;
+  animation: openerBaselineRise 0.48s cubic-bezier(0.22, 1, 0.36, 1) 0.32s both;
+}
+
+.opener-title__accent {
+  color: #f06543;
+}
+
+.opener-tagline-mask {
+  overflow: hidden;
+  padding: 2px 4px;
+}
+
+.opener-tagline {
+  margin: 0;
+  font-size: clamp(0.88rem, 2.6vw, 0.98rem);
+  font-weight: 500;
+  color: #52525b;
+  animation: openerBaselineRise 0.46s cubic-bezier(0.22, 1, 0.36, 1) 0.5s both;
+}
+
+.app-shell--ready .top-overlay__left {
+  animation: topItemEnter 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-shell--ready .top-overlay__center {
+  animation: topItemEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.04s both;
+}
+
+.app-shell--ready .top-overlay__right {
+  animation: topItemEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
+.app-shell--ready .floating-card {
+  animation: cardStageEnter 0.42s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+}
+
+@keyframes openerPinTouchdown {
+  0% {
+    opacity: 0;
+    transform: translateY(-34px) scale(0.88);
+  }
+  72% {
+    opacity: 1;
+    transform: translateY(2px) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes openerShadowSettle {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.3);
+  }
+  72% {
+    opacity: 1;
+    transform: scaleX(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes openerBaselineRise {
+  from {
+    opacity: 0;
+    transform: translateY(105%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes topItemEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cardStageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

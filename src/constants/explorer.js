@@ -2,7 +2,7 @@ export const DEFAULT_CENTER = [22.5937, 78.9629];
 
 export const DEFAULT_VIEWPORT = {
   center: DEFAULT_CENTER,
-  zoom: 5
+  zoom: 4.7
 };
 
 export const DEFAULT_REFERENCE_POINT = {
